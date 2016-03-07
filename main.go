@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"regexp"
 	"strings"
 )
@@ -58,6 +59,16 @@ func checkTaskFiles(t task) (checkResult, error) {
 		return checkResult{Passed: false, Message: message}, nil
 	}
 
+	if _, err := os.Stat(t.GithubDir); os.IsNotExist(err) { // Directory doesn't exist
+		message := fmt.Sprintf("No \"%s\" directory was found in this directory.", t.GithubDir)
+		return checkResult{Passed: false, Message: message}, nil
+	}
+
+	if _, err := os.Stat(path.Join(t.GithubDir, t.GithubFile)); os.IsNotExist(err) { // Directory doesn't exist
+		message := fmt.Sprintf("No \"%s\" file was found in the \"%s\" directory.", t.GithubFile, t.GithubDir)
+		return checkResult{Passed: false, Message: message}, nil
+	}
+
 	// TODO checking the dirs and files
 
 	return checkResult{Passed: true}, nil
@@ -87,13 +98,15 @@ func main() {
 	fmt.Printf("Name of the project: %s\n", p.Name)
 
 	for _, t := range p.Tasks {
-		fmt.Println("*****************")
-		fmt.Printf("Task \"%s\"\n", t.Title)
 		res, err := checkTaskFiles(t)
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 			return
 		}
-		fmt.Printf("%#v\n", res)
+		if res.Passed {
+			fmt.Printf("[OK] Task \"%s\"\n", t.Title)
+		} else {
+			fmt.Printf("[FAILED] Task \"%s\" (%s)\n", t.Title, res.Message)
+		}
 	}
 }
