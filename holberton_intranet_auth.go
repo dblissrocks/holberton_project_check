@@ -10,9 +10,13 @@ import (
 	"net/url"
 	"os"
 	"os/user"
+	"path"
 
 	"github.com/howeyc/gopass"
 )
+
+const holbertonDirName string = ".holberton"
+const holbertonIntranetTokenFile string = "intranet_token"
 
 // To unmarshal the responses from the server about tokens
 type tokenAuthFromServer struct {
@@ -65,9 +69,6 @@ func getWithHolbertonAuth(urlToGet string) (string, error) {
 	return "", errors.New(m.Message)
 }
 
-const holbertonDirName string = ".holberton"
-const holbertonIntranetTokenFile string = "intranet_token"
-
 // Will get it one way or another: will try getting the file first, fetch it later
 // Returns the email of the user and its token
 func getEmailAndToken() (tokenAuth, error) {
@@ -75,7 +76,7 @@ func getEmailAndToken() (tokenAuth, error) {
 	if err != nil {
 		return tokenAuth{}, err
 	}
-	holbertonIntranetTokenFilePath := holbertonDirPath + "/" + holbertonIntranetTokenFile
+	holbertonIntranetTokenFilePath := path.Join(holbertonDirPath, holbertonIntranetTokenFile)
 	if _, err := os.Stat(holbertonIntranetTokenFilePath); os.IsNotExist(err) { // File doesn't exist
 		fmt.Println("You never authenticated on this computer before.")
 		auth, err := login()
@@ -109,7 +110,7 @@ func ensureHolbertonPersonalDirectory() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	holbertonDirPath := usr.HomeDir + "/" + holbertonDirName
+	holbertonDirPath := path.Join(usr.HomeDir, holbertonDirName)
 	if _, err := os.Stat(holbertonDirPath); os.IsNotExist(err) {
 		if err := os.Mkdir(holbertonDirPath, 0700); err != nil {
 			return "", err
@@ -164,7 +165,7 @@ func login() (tokenAuth, error) {
 	if err != nil {
 		return tokenAuth{}, err
 	}
-	holbertonIntranetTokenFilePath := holbertonDirPath + "/" + holbertonIntranetTokenFile
+	holbertonIntranetTokenFilePath := path.Join(holbertonDirPath, holbertonIntranetTokenFile)
 	if err := ioutil.WriteFile(holbertonIntranetTokenFilePath, []byte(tokenToWrite), 0700); err != nil {
 		return tokenAuth{}, err
 	}
