@@ -38,7 +38,7 @@ func getWithHolbertonAuth(urlToGet string) (string, error) {
 		return "", err
 	}
 
-	urlToGetWithParams := urlToGet + "?user_email=" + auth.Email + "&user_token=" + auth.Token
+	urlToGetWithParams := fmt.Sprintf("%s?user_email=%s&user_token=%s", urlToGet, auth.Email, auth.Token)
 
 	resp, err := http.Get(urlToGetWithParams)
 	if err != nil {
