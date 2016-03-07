@@ -19,13 +19,13 @@ type project struct {
 func main() {
 	body, err := getWithHolbertonAuth("https://intranet.hbtn.io/projects/97.json")
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Printf("Error: %v", err)
 		return
 	}
 
 	var p project
 	if err := json.Unmarshal([]byte(body), &p); err != nil {
-		fmt.Println("Error:", err)
+		fmt.Printf("Error: %v", err)
 		return
 	}
 
