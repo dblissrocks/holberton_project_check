@@ -23,7 +23,7 @@ Then, change your directory to your project's directory, and run:
 
 Install Go (don't forget to setup a GOPATH), clone the repository under `$GOPATH/src`, and then:
 ```
-go install
+go get github.com/howeyc/gopass
 go run *.go
 ```
 
