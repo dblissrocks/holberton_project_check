@@ -5,32 +5,32 @@
 
 Holberton Project Check helps Holberton School's students make sure that all their files are the ones that are expected before they get QA reviewed by HolbertonCloud.
 
-It is composed of two main files:
- * `holberton_intranet_auth.go` provides all the token-based authentication to the intranet.
- * `main.go` will ultimately provide the end-user features; for now is pretty minimal.
-
 You need an account on Holberton School's intranet in order to use this.
 
 
-## About the token-based authentication
+## How to use on Mac OS
 
-The first time the user logs in, a configuration file is created in the user's repository containing a temporary token.
-From there on, all of the user cycle is managed; for instance, if the server refuses the token, the user is cleanly prompted to log in again.
+Download [the latest release](https://github.com/rudyrigot/holberton_project_check/releases).
 
-
-## Install & run locally
-
- * Install:
+Then, change your directory to your project's directory, and run:
 ```
-go get github.com/howeyc/gopass
+~/Downloads/holberton_project_check
 ```
- * Run:
+(or wherever the binary was downloaded)
+
+
+## Run from source
+
+Install Go (don't forget to setup a GOPATH), clone the repository under `$GOPATH/src`, and then:
 ```
+go install
 go run *.go
 ```
- * Build:
+
+## Build:
+
 ```
-go build *.go
+go build -o holberton_project_check *.go
 ```
 
 
