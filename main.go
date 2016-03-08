@@ -43,6 +43,11 @@ func oneOfTheLinesMatches(lines []string, r *regexp.Regexp) bool {
 // Checks that a given task is as expected
 func checkTaskFiles(t task) (checkResult, error) {
 
+	// No github repo specified = always ok
+	if t.GithubRepo == "" {
+		return checkResult{Passed: true}, nil
+	}
+
 	// Checking about the expected Git repository name
 	out, err := exec.Command("git", "remote", "-v").Output()
 	if err != nil {
