@@ -49,13 +49,19 @@ func checkTaskFiles(t task) (checkResult, error) {
 		return checkResult{}, err
 	}
 	lines := strings.Split(string(out), "\n")
-	pattern := fmt.Sprintf("git@github.com:.+/%s.git", t.GithubRepo)
-	r, err := regexp.Compile(pattern)
+
+	sshPattern := fmt.Sprintf(sshGithubFormat, t.GithubRepo)
+	sshCompiledPattern, err := regexp.Compile(sshPattern)
 	if err != nil {
 		return checkResult{}, err
 	}
-	if !oneOfTheLinesMatches(lines, r) {
-		message := fmt.Sprintf("No SSH remote points to a \"%s\" Github repository; make sure to run this application from your project's directory.", t.GithubRepo)
+	httpsPattern := fmt.Sprintf(httpsGithubFormat, t.GithubRepo)
+	httpsCompiledPattern, err := regexp.Compile(httpsPattern)
+	if err != nil {
+		return checkResult{}, err
+	}
+	if !oneOfTheLinesMatches(lines, sshCompiledPattern) && !oneOfTheLinesMatches(lines, httpsCompiledPattern) {
+		message := fmt.Sprintf("No remote pointing to a \"%s\" Github repository; make sure to run this application from your project's directory.", t.GithubRepo)
 		return checkResult{Passed: false, Message: message}, nil
 	}
 
