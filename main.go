@@ -88,7 +88,27 @@ func main() {
 		return
 	}
 
-	url := fmt.Sprintf(projectUrlFormat, 97)
+	// Listing current projects to choose one from
+	ps, err := getCurrentProjects()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("************************")
+	fmt.Println("Your current projects:")
+	for _, p := range ps {
+		fmt.Printf(" %d. %s  (%s)\n", p.ProjectID, p.ProjectName, p.ProjectTrackAndBlockDisplay)
+	}
+
+	fmt.Print("\nWhich project number? ")
+	var projectNumber int
+	if _, err := fmt.Scanf("%d", &projectNumber); err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return
+	}
+
+	// Project choser, let's proceed to get its information
+	url := fmt.Sprintf(projectURLFormat, projectNumber)
 	body, err := getWithHolbertonAuth(url)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
@@ -101,6 +121,7 @@ func main() {
 		return
 	}
 
+	// Now, let's check what's up, and display our findings
 	fmt.Println("************************")
 	fmt.Printf("Name of the project: %s\n", p.Name)
 
