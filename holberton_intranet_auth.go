@@ -17,6 +17,7 @@ import (
 
 const holbertonDirName string = ".holberton"
 const holbertonIntranetTokenFile string = "intranet_token"
+const tokenUrl string = "https://intranet.hbtn.io/token"
 
 // To unmarshal the responses from the server about tokens
 type tokenAuthFromServer struct {
@@ -137,7 +138,7 @@ func login() (tokenAuth, error) {
 	}
 
 	// Fetch the token from the endpoint
-	resp, err := http.PostForm("https://intranet.hbtn.io/token", url.Values{"email": {email}, "password": {string(password)}})
+	resp, err := http.PostForm(tokenUrl, url.Values{"email": {email}, "password": {string(password)}})
 	if err != nil {
 		return tokenAuth{}, err
 	}

@@ -88,7 +88,8 @@ func main() {
 		return
 	}
 
-	body, err := getWithHolbertonAuth("https://intranet.hbtn.io/projects/97.json")
+	url := fmt.Sprintf(projectUrlFormat, 97)
+	body, err := getWithHolbertonAuth(url)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		return
