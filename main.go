@@ -86,6 +86,13 @@ func checkTaskFiles(t task) (checkResult, error) {
 }
 
 func main() {
+	// Looks for '-check' flag to specify checking files
+	check := false
+	for _, v := range os.Args {
+		if v == "-check" {
+			check = true
+		}
+	}
 
 	// Check that .git exists
 	if _, err := os.Stat(".git"); os.IsNotExist(err) { // File doesn't exist
@@ -131,13 +138,24 @@ func main() {
 	fmt.Printf("Name of the project: %s\n", p.Name)
 
 	for _, t := range p.Tasks {
-		res, err := checkTaskFiles(t)
+		var res checkResult
+		var err error
+		if check {
+			res, err = checkTaskFiles(t)
+		} else {
+			res, err = createTaskFiles(t)
+		}
+
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 			return
 		}
 		if res.Passed {
-			fmt.Printf("[OK] Task \"%s\"\n", t.Title)
+			if check == true {
+				fmt.Printf("[OK] Checked \"%s\"\n", t.Title)
+			} else {
+				fmt.Printf("[OK] Created \"%s\"\n", t.Title)
+			}
 		} else {
 			fmt.Printf("[FAILED] Task \"%s\" (%s)\n", t.Title, res.Message)
 		}
