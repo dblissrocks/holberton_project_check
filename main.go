@@ -40,9 +40,7 @@ func oneOfTheLinesMatches(lines []string, r *regexp.Regexp) bool {
 	return false
 }
 
-// Checks that a given task is as expected
-func checkTaskFiles(t task) (checkResult, error) {
-
+func checkRepo(t task) (checkResult, error) {
 	// No github repo specified = always ok
 	if t.GithubRepo == "" {
 		return checkResult{Passed: true}, nil
@@ -65,11 +63,16 @@ func checkTaskFiles(t task) (checkResult, error) {
 	if err != nil {
 		return checkResult{}, err
 	}
+
 	if !oneOfTheLinesMatches(lines, sshCompiledPattern) && !oneOfTheLinesMatches(lines, httpsCompiledPattern) {
 		message := fmt.Sprintf("No remote pointing to a \"%s\" Github repository; make sure to run this application from your project's directory.", t.GithubRepo)
 		return checkResult{Passed: false, Message: message}, nil
 	}
+	return checkResult{Passed: true}, nil
+}
 
+// Checks that a given task is as expected
+func checkTaskFiles(t task) (checkResult, error) {
 	if _, err := os.Stat(t.GithubDir); os.IsNotExist(err) { // Directory doesn't exist
 		message := fmt.Sprintf("No \"%s\" directory was found in this directory.", t.GithubDir)
 		return checkResult{Passed: false, Message: message}, nil
@@ -138,11 +141,10 @@ func main() {
 	fmt.Printf("Name of the project: %s\n", p.Name)
 
 	for _, t := range p.Tasks {
-		var res checkResult
-		var err error
-		if check {
+		res, err := checkRepo(t)
+		if check && res.Passed {
 			res, err = checkTaskFiles(t)
-		} else {
+		} else if res.Passed {
 			res, err = createTaskFiles(t)
 		}
 
