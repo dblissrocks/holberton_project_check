@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -90,12 +91,8 @@ func checkTaskFiles(t task) (checkResult, error) {
 
 func main() {
 	// Looks for '-check' flag to specify checking files
-	check := false
-	for _, v := range os.Args {
-		if v == "-check" {
-			check = true
-		}
-	}
+	check := flag.Bool("check", false, "Specifies checking the file structure")
+	flag.Parse()
 
 	// Check that .git exists
 	if _, err := os.Stat(".git"); os.IsNotExist(err) { // File doesn't exist
@@ -142,7 +139,7 @@ func main() {
 
 	for _, t := range p.Tasks {
 		res, err := checkRepo(t)
-		if check && res.Passed {
+		if *check && res.Passed {
 			res, err = checkTaskFiles(t)
 		} else if res.Passed {
 			res, err = createTaskFiles(t)
@@ -153,7 +150,7 @@ func main() {
 			return
 		}
 		if res.Passed {
-			if check == true {
+			if *check {
 				fmt.Printf("[OK] Checked \"%s\"\n", t.Title)
 			} else {
 				fmt.Printf("[OK] Created \"%s\"\n", t.Title)
