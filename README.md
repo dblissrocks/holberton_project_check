@@ -3,9 +3,9 @@
 
 ## What is this?
 
-Holberton Project Check helps Holberton School's students make sure that all their files are the ones that are expected before they get QA reviewed by HolbertonCloud.
+Holberton Project Check helps Holberton School's students create the files they need to turn in for a project, so that they get properly QA reviewed by HolbertonCloud.
 - By default, the program creates the directories and files required for each task.
-- Use the flag '-check' when running the program to check if the required files exist.
+- Use the flag '-check' when running the program to check if the required files already exist.
 
 You need an account on Holberton School's intranet in order to use this.
 
