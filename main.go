@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -40,9 +41,7 @@ func oneOfTheLinesMatches(lines []string, r *regexp.Regexp) bool {
 	return false
 }
 
-// Checks that a given task is as expected
-func checkTaskFiles(t task) (checkResult, error) {
-
+func checkRepo(t task) (checkResult, error) {
 	// No github repo specified = always ok
 	if t.GithubRepo == "" {
 		return checkResult{Passed: true}, nil
@@ -65,11 +64,16 @@ func checkTaskFiles(t task) (checkResult, error) {
 	if err != nil {
 		return checkResult{}, err
 	}
+
 	if !oneOfTheLinesMatches(lines, sshCompiledPattern) && !oneOfTheLinesMatches(lines, httpsCompiledPattern) {
 		message := fmt.Sprintf("No remote pointing to a \"%s\" Github repository; make sure to run this application from your project's directory.", t.GithubRepo)
 		return checkResult{Passed: false, Message: message}, nil
 	}
+	return checkResult{Passed: true}, nil
+}
 
+// Checks that a given task is as expected
+func checkTaskFiles(t task) (checkResult, error) {
 	if _, err := os.Stat(t.GithubDir); os.IsNotExist(err) { // Directory doesn't exist
 		message := fmt.Sprintf("No \"%s\" directory was found in this directory.", t.GithubDir)
 		return checkResult{Passed: false, Message: message}, nil
@@ -87,12 +91,8 @@ func checkTaskFiles(t task) (checkResult, error) {
 
 func main() {
 	// Looks for '-check' flag to specify checking files
-	check := false
-	for _, v := range os.Args {
-		if v == "-check" {
-			check = true
-		}
-	}
+	check := flag.Bool("check", false, "Specifies checking the file structure")
+	flag.Parse()
 
 	// Check that .git exists
 	if _, err := os.Stat(".git"); os.IsNotExist(err) { // File doesn't exist
@@ -138,11 +138,10 @@ func main() {
 	fmt.Printf("Name of the project: %s\n", p.Name)
 
 	for _, t := range p.Tasks {
-		var res checkResult
-		var err error
-		if check {
+		res, err := checkRepo(t)
+		if *check && res.Passed {
 			res, err = checkTaskFiles(t)
-		} else {
+		} else if res.Passed {
 			res, err = createTaskFiles(t)
 		}
 
@@ -151,7 +150,7 @@ func main() {
 			return
 		}
 		if res.Passed {
-			if check == true {
+			if *check {
 				fmt.Printf("[OK] Checked \"%s\"\n", t.Title)
 			} else {
 				fmt.Printf("[OK] Created \"%s\"\n", t.Title)
