@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path"
 	"regexp"
 	"strings"
 )
@@ -69,23 +68,6 @@ func checkRepo(t task) (checkResult, error) {
 		message := fmt.Sprintf("No remote pointing to a \"%s\" Github repository; make sure to run this application from your project's directory.", t.GithubRepo)
 		return checkResult{Passed: false, Message: message}, nil
 	}
-	return checkResult{Passed: true}, nil
-}
-
-// Checks that a given task is as expected
-func checkTaskFiles(t task) (checkResult, error) {
-	if _, err := os.Stat(t.GithubDir); os.IsNotExist(err) { // Directory doesn't exist
-		message := fmt.Sprintf("No \"%s\" directory was found in this directory.", t.GithubDir)
-		return checkResult{Passed: false, Message: message}, nil
-	}
-
-	if _, err := os.Stat(path.Join(t.GithubDir, t.GithubFile)); os.IsNotExist(err) { // Directory doesn't exist
-		message := fmt.Sprintf("No \"%s\" file was found in the \"%s\" directory.", t.GithubFile, t.GithubDir)
-		return checkResult{Passed: false, Message: message}, nil
-	}
-
-	// TODO checking the dirs and files
-
 	return checkResult{Passed: true}, nil
 }
 
